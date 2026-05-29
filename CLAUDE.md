@@ -1,55 +1,56 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **Cursor**: compressed always-on rules live in `.cursor/rules/`. This file is the full spec.
+
+Guidance for Claude Code and other agents working in this repository.
 
 ## Project Overview
 
-SciOly Practice Platform — a Next.js + Supabase web app for Science Olympiad students. Two goals: resource repository (link-based, tagged by event) and async ghost-race quiz competition. Ghost-race = a solo run replayed alongside a recording of another user's earlier run, sidestepping the cold-start problem of real-time matchmaking.
+SciOly Practice Platform — Next.js + Supabase for Science Olympiad students. Two goals: resource repository (link-based, tagged by event) and async ghost-race quiz competition. Ghost-race = solo run replayed alongside another user's recorded run (no realtime matchmaking).
 
-Build order: Foundation → Layer 1 (resource repo) → Layer 3 (solo practice) → Layer 4 (ghost-race). Only Foundation + Layer 1 are in scope for the first plan.
+**Build order:** Foundation → L1 (resources) → L3 (solo practice) → L4 (ghost-race). **Only L0 + L1 in scope now.**
 
 ## Commands
 
 ```bash
-npm run dev       # start dev server (localhost:3000)
-npm run build     # production build
-npm run lint      # ESLint
+npm run dev    # localhost:3000
+npm run build
+npm run lint
 ```
 
 ## Architecture
 
-### Stack
-
-- **Next.js** (App Router) — full-stack React; UI + API routes in one repo
-- **Supabase** — Postgres, Auth, and (later) Realtime; JS client via `@supabase/supabase-js`
-- **Vercel** — deploy on push to main
-
-### Database layers
+**Stack:** Next.js App Router · Supabase (Postgres, Auth) · Vercel
 
 | Layer | Tables | Status |
 | --- | --- | --- |
-| 0 — Foundation | `events`, `users` (via Supabase Auth + profile row) | first |
-| 1 — Resources | `resources` (title, url, description, event FK) | first |
-| 3 — Practice *(future)* | `questions`, `runs`, `answers` | future |
-| 4 — Ghost-race *(future)* | `matches`, `recordings`, ratings | future |
+| L0 Foundation | `events`, `users` (Auth + profile FK) | now |
+| L1 Resources | `resources` (title, url, description, event FK) | now |
+| L3 Practice | `questions`, `runs`, `answers` | future |
+| L4 Ghost-race | `matches`, `recordings`, ratings | future |
 
-### Key schema decisions to respect
+### Schema decisions
 
-- `events.practice_type` is an enum: `quiz | hybrid | build`. Controls which events get questions vs. repo-only.
-- Events are stored in the DB (not hardcoded) — the national slate rotates yearly.
-- Division (B/C) is self-selected by users; stored on the user profile row.
-- Questions must be **graded server-side** from the very first question — correct answers never sent to the client. This is the anti-cheat foundation for future ranked play.
+- `events.practice_type`: `quiz | hybrid | build` — quiz vs repo-only events
+- Events in DB (yearly slate), not hardcoded
+- Division B/C self-selected → stored on user profile
+- Questions graded **server-side** from day one; correct answers never sent to client
 
-### Supabase client
+### Supabase clients
 
-Instantiate a single client in `lib/supabase.ts` (or `lib/supabase/client.ts` / `server.ts` if using the SSR split). Credentials come from `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` — never commit `.env.local`.
+SSR split (already in repo):
+
+- `src/lib/supabase/client.ts` — browser
+- `src/lib/supabase/server.ts` — server/RSC (cookies)
+
+Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` — never commit.
 
 ### Auth
 
-Supabase Auth handles signup/login. On signup, create a `users` profile row (linked to `auth.users` via FK) that stores the user's chosen division (B/C).
+Supabase Auth for signup/login. On signup, create `users` profile row (FK to `auth.users`) with chosen division.
 
-## Important constraints
+## Constraints
 
-- `.env.local` must be in `.gitignore` before the first commit with real credentials.
-- Resource submissions (Layer 1) are **link-only** — no file uploads in v1.
-- Real-time simultaneous matchmaking is intentionally deferred (likely never); all competition is async ghost-race.
+- `.env.local` gitignored (`.env*` with `!.env*.example`)
+- L1 resources: **link-only**, no file uploads in v1
+- Competition is async ghost-race only; realtime matchmaking deferred

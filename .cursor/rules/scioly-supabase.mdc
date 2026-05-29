@@ -1,0 +1,21 @@
+---
+description: Supabase client usage and auth patterns
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Supabase in this repo
+
+Use the SSR split — do not add a monolithic `lib/supabase.ts`.
+
+```typescript
+// Client Components / browser
+import { createClient } from "@/lib/supabase/client";
+
+// Server Components, Route Handlers, Server Actions
+import { createClient } from "@/lib/supabase/server";
+```
+
+- Env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
+- Auth: Supabase Auth; profile row stores division (B/C)
+- MCP: `.mcp.json` has Supabase project MCP if DB work is needed

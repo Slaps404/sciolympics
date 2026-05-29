@@ -1,0 +1,36 @@
+---
+description: SciOlympics scope, architecture, and hard constraints
+alwaysApply: true
+---
+
+# SciOlympics
+
+SciOly practice platform: Next.js App Router + Supabase + Vercel. Link-based resource repo now; async ghost-race quizzes later (solo run vs recorded ghost — no realtime matchmaking).
+
+## In scope (default)
+- **L0**: `events`, `users` (Supabase Auth + profile FK, division B/C)
+- **L1**: `resources` (title, url, description, event FK) — link-only, no uploads
+
+## Out of scope (don't build unless asked)
+- **L3**: `questions`, `runs`, `answers`
+- **L4**: `matches`, `recordings`, ratings
+
+## Commands
+`npm run dev` · `npm run build` · `npm run lint`
+
+## Repo map
+- `src/app/` — pages, layouts, API routes
+- `src/lib/supabase/client.ts` — browser client
+- `src/lib/supabase/server.ts` — server/RSC client (cookies)
+- `.env.local` from `.env.local.example` — never commit
+
+## Schema rules
+- `events.practice_type`: `quiz | hybrid | build` (quiz vs repo-only)
+- Events in DB, not hardcoded (slate rotates yearly)
+- On signup: create `users` profile row linked to `auth.users`
+- **Future grading**: server-side only; correct answers never to client
+
+## Build discipline
+- Minimal diffs; reuse existing patterns
+- Next.js APIs may differ from training data — check `node_modules/next/dist/docs/` when unsure
+- Full narrative spec: `CLAUDE.md`
