@@ -19,6 +19,7 @@ export interface Database {
           slug: string;
           practice_type: PracticeType;
           season_year: number;
+          description: string | null;
           created_at: string;
         };
         Insert: {
@@ -27,6 +28,7 @@ export interface Database {
           slug: string;
           practice_type: PracticeType;
           season_year: number;
+          description?: string | null;
           created_at?: string;
         };
         Update: {
@@ -35,6 +37,7 @@ export interface Database {
           slug?: string;
           practice_type?: PracticeType;
           season_year?: number;
+          description?: string | null;
           created_at?: string;
         };
         Relationships: [];
