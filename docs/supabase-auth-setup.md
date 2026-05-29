@@ -4,15 +4,19 @@ Complete these steps in the [Supabase Dashboard](https://supabase.com/dashboard/
 
 ## 1. Enable email provider
 
-1. Go to **Authentication → Providers → Email**
-2. Enable **Email** sign-in
-3. Keep **Confirm email** enabled for production-like behavior (recommended)
+Supabase moved these settings under **Configuration** in the Auth sidebar (there is no top-level “Providers” item anymore).
+
+1. Open [**Authentication**](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/users) in the left nav
+2. Under **CONFIGURATION**, click [**Sign In / Providers**](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/providers)
+3. Open **Email** in the provider list
+4. Turn **Enable Email provider** on
+5. Keep **Confirm email** enabled for production-like behavior (recommended)
 
 With confirm email **on**, signup shows “check your email” until the user clicks the link. Profile rows are created via DB trigger on `auth.users` insert; session starts after confirm at `/auth/callback`.
 
 ## 2. Set redirect URLs
 
-Go to **Authentication → URL Configuration**:
+Under the same Auth sidebar, open [**URL Configuration**](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/url-configuration) (**CONFIGURATION** section):
 
 | Setting | Value |
 |---------|-------|
@@ -54,3 +58,15 @@ Or run the SQL in `supabase/migrations/` and `supabase/seed.sql` via the SQL Edi
 4. Confirm rows in **Authentication → Users** and **Table Editor → users**
 
 Full checklist: [`finish-init-checklist.md`](finish-init-checklist.md).
+
+## Troubleshooting: email confirmation errors
+
+**"Could not confirm your email" after clicking the link**
+
+- Open the link in the **same browser** you used when you signed up. PKCE verification cookies are browser-local; switching browsers breaks the flow.
+- If the link has expired or was already used, request a new one by signing up again (if the first attempt failed) or using "Forgot password."
+- If you see this error but you're already logged in on another tab, the confirmation may have succeeded silently — refresh the home page.
+
+**"Could not confirm your email" but you can still log in**
+
+Your account was confirmed during an earlier attempt even though the callback showed an error. Try logging in with your email and password directly — if it works, you're all set.

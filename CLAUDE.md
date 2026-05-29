@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **Build phase:** L1 in progress — see [`docs/project-status.md`](docs/project-status.md)
+
 > **Cursor**: compressed always-on rules live in `.cursor/rules/`. This file is the full spec.
 
 Guidance for Claude Code and other agents working in this repository.
@@ -24,8 +26,8 @@ npm run lint
 
 | Layer | Tables | Status |
 | --- | --- | --- |
-| L0 Foundation | `events`, `users` (Auth + profile FK) | now |
-| L1 Resources | `resources` (title, url, description, event FK) | now |
+| L0 Foundation | `events`, `users` (Auth + profile FK) | ✅ complete |
+| L1 Resources | `resources` (title, url, description, event FK) | 🔄 in progress |
 | L3 Practice | `questions`, `runs`, `answers` | future |
 | L4 Ghost-race | `matches`, `recordings`, ratings | future |
 

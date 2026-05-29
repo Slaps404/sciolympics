@@ -3,35 +3,49 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureUserProfile } from "@/lib/auth/ensure-profile";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
+import { mapAuthError } from "@/lib/auth/messages";
 import type { Division } from "@/lib/supabase/database.types";
 
-function getEmailRedirectTo() {
+function getEmailRedirectTo(next: string) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  return `${siteUrl}/auth/callback`;
+  const callbackUrl = new URL(`${siteUrl}/auth/callback`);
+  if (next !== "/") callbackUrl.searchParams.set("next", next);
+  return callbackUrl.toString();
 }
 
 export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const next = safeRedirectPath(String(formData.get("next") ?? ""));
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/login?error=${encodeURIComponent(mapAuthError(error.message))}${nextParam}`);
   }
 
   await ensureUserProfile(supabase);
-  redirect("/");
+  redirect(next);
 }
 
 export async function signup(formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const passwordConfirm = String(formData.get("password_confirm") ?? "");
   const division = String(formData.get("division") ?? "") as Division;
+  const next = safeRedirectPath(String(formData.get("next") ?? ""));
+
+  if (password !== passwordConfirm) {
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?error=password_mismatch${nextParam}`);
+  }
 
   if (division !== "B" && division !== "C") {
-    redirect("/signup?error=invalid-division");
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?error=invalid_division${nextParam}`);
   }
 
   const supabase = await createClient();
@@ -40,26 +54,27 @@ export async function signup(formData: FormData) {
     password,
     options: {
       data: { division },
-      emailRedirectTo: getEmailRedirectTo(),
+      emailRedirectTo: getEmailRedirectTo(next),
     },
   });
 
   if (error) {
-    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?error=${encodeURIComponent(mapAuthError(error.message))}${nextParam}`);
   }
 
   if (!data.user) {
-    redirect(
-      "/signup?error=Account%20created%20but%20no%20user%20returned.%20Check%20your%20email%20or%20try%20again."
-    );
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?error=no_user_returned${nextParam}`);
   }
 
   if (!data.session) {
-    redirect("/signup?message=check-email");
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?message=check-email${nextParam}`);
   }
 
   await ensureUserProfile(supabase);
-  redirect("/");
+  redirect(next);
 }
 
 export async function logout() {

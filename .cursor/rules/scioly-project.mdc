@@ -34,3 +34,7 @@ SciOly practice platform: Next.js App Router + Supabase + Vercel. Link-based res
 - Minimal diffs; reuse existing patterns
 - Next.js APIs may differ from training data — check `node_modules/next/dist/docs/` when unsure
 - Full narrative spec: `CLAUDE.md`
+
+## Current build phase
+
+**L1 (resources)** — event detail pages + link submission. L0 and auth are complete.

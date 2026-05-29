@@ -52,11 +52,11 @@ Migrations live in [`supabase/migrations/`](supabase/migrations/). Finish setup:
 
 | Layer | Status |
 |-------|--------|
-| L0 Foundation (`events`, `users`) | In progress |
-| L1 Resources (`resources`, link-only) | Planned |
+| L0 Foundation (`events`, `users`) | ✅ Complete |
+| L1 Resources (`resources`, link-only) | 🔄 In progress |
 | L3 Practice / L4 Ghost-race | Future |
 
-Full spec: [`CLAUDE.md`](CLAUDE.md). Cursor rules: [`.cursor/rules/`](.cursor/rules/).
+Full spec: [`CLAUDE.md`](CLAUDE.md). Cursor rules: [`.cursor/rules/`](.cursor/rules/). · Status: [`docs/project-status.md`](docs/project-status.md)
 
 ## Auth flow
 

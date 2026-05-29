@@ -23,14 +23,13 @@ npm run dev
 
 ## Step 2 — Supabase Auth (email confirmation ON)
 
-**What:** Tell Supabase where users land after they click the confirm link in email.
+**What:** Enable email sign-in and set where users land after they click the confirm link.
 
-Dashboard: [Supabase → Auth](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/url-configuration)
+1. [**Sign In / Providers**](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/providers) → **Email** → enable provider, **Confirm email** **On**
+2. [**URL Configuration**](https://supabase.com/dashboard/project/tenvdkinyvhdlitkwzru/auth/url-configuration):
 
 | Setting | Value |
 |---------|--------|
-| Email provider | Enabled |
-| Confirm email | **On** (production-like) |
 | Site URL | `http://localhost:3000` |
 | Redirect URLs | `http://localhost:3000/auth/callback` |
 
@@ -86,6 +85,7 @@ Repeat Step 3 on the production URL.
 - [ ] GitHub Actions CI green on `master` (`.github/workflows/ci.yml`)
 - [ ] Do **not** run `npm audit fix --force` (downgrades Next.js — see README)
 - [ ] Optional: customize Supabase email templates
+- [ ] Optional: Supabase MCP in Cursor — [`supabase-mcp-cursor.md`](supabase-mcp-cursor.md) (authenticate under Settings → Tools & MCP)
 
 ---
 

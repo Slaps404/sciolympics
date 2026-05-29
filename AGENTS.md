@@ -1,5 +1,7 @@
 # SciOlympics — Agent Guide
 
+> Read [`docs/project-status.md`](docs/project-status.md) for current build phase before starting work.
+
 Cursor loads `.cursor/rules/` automatically. Human-readable spec: `CLAUDE.md`.
 
 <!-- BEGIN:nextjs-agent-rules -->
