@@ -86,6 +86,7 @@ Repeat Step 3 on the production URL.
 - [ ] GitHub Actions CI green on `master` (`.github/workflows/ci.yml`)
 - [ ] Do **not** run `npm audit fix --force` (downgrades Next.js — see README)
 - [ ] Optional: customize Supabase email templates
+- [ ] Optional: Supabase MCP in Cursor — [`supabase-mcp-cursor.md`](supabase-mcp-cursor.md) (authenticate under Settings → Tools & MCP)
 
 ---
 
