@@ -59,8 +59,8 @@ export async function GET(request: Request) {
     console.error("ensureUserProfile failed after auth callback", e);
   }
 
-  // Append ?message=confirmed so the landing page can show a success banner
+  // Append ?message=confirmed only when landing on home so it doesn't pollute other page URLs
   const redirectUrl = new URL(`${origin}${next}`);
-  redirectUrl.searchParams.set("message", "confirmed");
+  if (next === "/") redirectUrl.searchParams.set("message", "confirmed");
   return NextResponse.redirect(redirectUrl.toString());
 }

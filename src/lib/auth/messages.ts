@@ -6,6 +6,7 @@ export const AUTH_ERROR_MESSAGES: Record<string, string> = {
   callback_invalid_type:
     "The confirmation link was invalid. Please try signing up again.",
   invalid_division: "Please select a valid division (B or C).",
+  no_user_returned: "Account created but could not establish a session. Check your email or try again.",
   password_mismatch: "Passwords do not match. Please try again.",
 };
 
@@ -14,5 +15,5 @@ export function mapAuthError(raw: string | null): string {
     return "Something went wrong. Please try again.";
   }
 
-  return AUTH_ERROR_MESSAGES[raw] ?? raw;
+  return AUTH_ERROR_MESSAGES[raw] ?? "Something went wrong. Please try again.";
 }

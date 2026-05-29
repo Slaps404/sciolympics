@@ -64,9 +64,8 @@ export async function signup(formData: FormData) {
   }
 
   if (!data.user) {
-    redirect(
-      "/signup?error=Account%20created%20but%20no%20user%20returned.%20Check%20your%20email%20or%20try%20again."
-    );
+    const nextParam = next !== "/" ? `&next=${encodeURIComponent(next)}` : "";
+    redirect(`/signup?error=no_user_returned${nextParam}`);
   }
 
   if (!data.session) {

@@ -126,9 +126,9 @@ export default async function EventPage({
               </label>
               <label className="flex flex-col gap-1 text-sm">
                 Description (optional)
-                <input
+                <textarea
                   name="description"
-                  type="text"
+                  rows={3}
                   className="rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
                 />
               </label>

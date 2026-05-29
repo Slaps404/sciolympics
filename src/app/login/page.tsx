@@ -72,7 +72,7 @@ export default async function LoginPage({
 
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
         No account?{" "}
-        <Link href="/signup" className="font-medium underline">
+        <Link href={next !== "/" ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium underline">
           Sign up
         </Link>
       </p>
