@@ -2,7 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ensureUserProfile } from "@/lib/auth/ensure-profile";
 import type { Division } from "@/lib/supabase/database.types";
+
+function getEmailRedirectTo() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return `${siteUrl}/auth/callback`;
+}
 
 export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "");
@@ -15,6 +21,7 @@ export async function login(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
   }
 
+  await ensureUserProfile(supabase);
   redirect("/");
 }
 
@@ -28,7 +35,14 @@ export async function signup(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { division },
+      emailRedirectTo: getEmailRedirectTo(),
+    },
+  });
 
   if (error) {
     redirect(`/signup?error=${encodeURIComponent(error.message)}`);
@@ -40,15 +54,11 @@ export async function signup(formData: FormData) {
     );
   }
 
-  const { error: profileError } = await supabase.from("users").insert({
-    id: data.user.id,
-    division,
-  });
-
-  if (profileError) {
-    redirect(`/signup?error=${encodeURIComponent(profileError.message)}`);
+  if (!data.session) {
+    redirect("/signup?message=check-email");
   }
 
+  await ensureUserProfile(supabase);
   redirect("/");
 }
 

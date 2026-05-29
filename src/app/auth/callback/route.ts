@@ -1,5 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { ensureUserProfile } from "@/lib/auth/ensure-profile";
 import { safeRedirectPath } from "@/lib/auth/safe-redirect";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -11,6 +12,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      await ensureUserProfile(supabase);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
