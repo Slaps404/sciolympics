@@ -21,61 +21,65 @@ export default async function LoginPage({
   if (user) redirect(next);
 
   return (
-    <div className="mx-auto flex min-h-[60vh] w-full max-w-md flex-col justify-center gap-6 px-6">
-      <Link
-        href="/"
-        className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-      >
-        ← Back to home
-      </Link>
+    <div className="flex min-h-[80vh] items-center justify-center px-6">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 text-center">
+          <Link href="/" className="text-xl font-semibold tracking-tight">
+            SciOlympics
+          </Link>
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            Log in to your account
+          </p>
+        </div>
 
-      <div>
-        <h1 className="text-2xl font-semibold">Log in</h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Access SciOlympics practice resources.
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          {error ? (
+            <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+              {mapAuthError(error)}
+            </p>
+          ) : null}
+
+          <form action={login} className="flex flex-col gap-4">
+            <input type="hidden" name="next" value={next} />
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              Email
+              <input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-normal focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              Password
+              <input
+                name="password"
+                type="password"
+                required
+                autoComplete="current-password"
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-normal focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-800"
+              />
+            </label>
+            <button
+              type="submit"
+              className="mt-1 w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            >
+              Log in
+            </button>
+          </form>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+          No account?{" "}
+          <Link
+            href={next !== "/" ? `/signup?next=${encodeURIComponent(next)}` : "/signup"}
+            className="font-medium text-zinc-900 underline underline-offset-2 dark:text-zinc-100"
+          >
+            Sign up
+          </Link>
         </p>
       </div>
-
-      {error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-          {mapAuthError(error)}
-        </p>
-      ) : null}
-
-      <form action={login} className="flex flex-col gap-4">
-        <input type="hidden" name="next" value={next} />
-        <label className="flex flex-col gap-1 text-sm">
-          Email
-          <input
-            name="email"
-            type="email"
-            required
-            className="rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Password
-          <input
-            name="password"
-            type="password"
-            required
-            className="rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        </label>
-        <button
-          type="submit"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-        >
-          Log in
-        </button>
-      </form>
-
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        No account?{" "}
-        <Link href={next !== "/" ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium underline">
-          Sign up
-        </Link>
-      </p>
     </div>
   );
 }
