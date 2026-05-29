@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ message?: string }>;
+}) {
+  const params = await searchParams;
   const supabase = await createClient();
   const { data: events, error } = await supabase
     .from("events")
@@ -10,6 +15,11 @@ export default async function Home() {
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-12">
+      {params.message === "confirmed" ? (
+        <p className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-200">
+          Email confirmed — welcome to SciOlympics!
+        </p>
+      ) : null}
       <section className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">
           SciOly practice platform
@@ -41,12 +51,17 @@ export default async function Home() {
             {events.map((event) => (
               <li
                 key={event.id}
-                className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+                className="rounded-lg border border-zinc-200 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
               >
-                <p className="font-medium">{event.name}</p>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                  {event.practice_type} · {event.season_year}
-                </p>
+                <Link
+                  href={`/events/${event.slug}`}
+                  className="block p-4"
+                >
+                  <p className="font-medium">{event.name}</p>
+                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                    {event.practice_type} · {event.season_year}
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>
