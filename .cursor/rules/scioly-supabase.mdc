@@ -16,6 +16,6 @@ import { createClient } from "@/lib/supabase/client";
 import { createClient } from "@/lib/supabase/server";
 ```
 
-- Env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`)
 - Auth: Supabase Auth; profile row stores division (B/C)
 - MCP: `.mcp.json` has Supabase project MCP if DB work is needed
