@@ -24,14 +24,18 @@ Get API keys from **Supabase Dashboard → Project Settings → API**.
 One-time CLI login, then apply migrations and seed:
 
 ```bash
-npx supabase login
+npm run db:login   # opens browser — not `supabase` alone; use npm/npx on Windows
 npm run db:link    # enter database password when prompted
 npm run db:push
 npm run db:seed
 npm run gen:types  # optional — overwrites hand-maintained types from live schema
 ```
 
-Migrations live in [`supabase/migrations/`](supabase/migrations/). See [`docs/supabase-auth-setup.md`](docs/supabase-auth-setup.md) for Auth dashboard settings (redirect URLs, email provider).
+**Troubleshooting:** If you see `supabase is not recognized`, use `npm run db:*` or `npx supabase` (CLI is a dev dependency, not global). If you see `Cannot find project ref`, run `npm run db:link` first.
+
+**Do not run `npm audit fix --force`** — it downgrades Next.js to v9 and pulls in hundreds of legacy webpack vulnerabilities. This repo pins `next@16.2.6`. Use `npm audit` only; if issues remain, fix via `package.json` overrides (not `--force`).
+
+Migrations live in [`supabase/migrations/`](supabase/migrations/). Finish setup: [`docs/finish-init-checklist.md`](docs/finish-init-checklist.md) · Auth: [`docs/supabase-auth-setup.md`](docs/supabase-auth-setup.md) · Deploy: [`docs/vercel-deploy.md`](docs/vercel-deploy.md).
 
 ## Scripts
 
