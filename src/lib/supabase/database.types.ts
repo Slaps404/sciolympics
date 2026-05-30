@@ -46,17 +46,59 @@ export interface Database {
         Row: {
           id: string;
           division: Division;
+          is_admin: boolean;
           created_at: string;
         };
         Insert: {
           id: string;
           division: Division;
+          is_admin?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
           division?: Division;
+          is_admin?: boolean;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      resource_candidates: {
+        Row: {
+          id: string;
+          url: string;
+          event_id: string;
+          title: string;
+          ai_description: string | null;
+          relevance_score: number | null;
+          trust_score: number | null;
+          resource_type: string | null;
+          status: "pending" | "approved" | "rejected";
+          found_at: string;
+        };
+        Insert: {
+          id?: string;
+          url: string;
+          event_id: string;
+          title: string;
+          ai_description?: string | null;
+          relevance_score?: number | null;
+          trust_score?: number | null;
+          resource_type?: string | null;
+          status?: "pending" | "approved" | "rejected";
+          found_at?: string;
+        };
+        Update: {
+          id?: string;
+          url?: string;
+          event_id?: string;
+          title?: string;
+          ai_description?: string | null;
+          relevance_score?: number | null;
+          trust_score?: number | null;
+          resource_type?: string | null;
+          status?: "pending" | "approved" | "rejected";
+          found_at?: string;
         };
         Relationships: [];
       };
