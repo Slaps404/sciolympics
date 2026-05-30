@@ -23,6 +23,38 @@ async function requireAdmin() {
   return supabase;
 }
 
+function parseOptionalScore(formData: FormData, key: string): number | null {
+  const raw = String(formData.get(key) ?? "").trim();
+  if (!raw) return null;
+
+  const score = Number(raw);
+  if (!Number.isInteger(score) || score < 1 || score > 10) return null;
+
+  return score;
+}
+
+function parseReviewFeedback(formData: FormData) {
+  const review_relevance_score = parseOptionalScore(
+    formData,
+    "review_relevance_score"
+  );
+  const review_trust_score = parseOptionalScore(formData, "review_trust_score");
+  const review_notes =
+    String(formData.get("review_notes") ?? "").trim().slice(0, 300) || null;
+
+  return {
+    review_relevance_score,
+    review_trust_score,
+    review_notes,
+    reviewed_at:
+      review_relevance_score !== null ||
+      review_trust_score !== null ||
+      review_notes !== null
+        ? new Date().toISOString()
+        : null,
+  };
+}
+
 export async function approveCandidate(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   if (!id) redirect("/admin/review");
@@ -39,6 +71,21 @@ export async function approveCandidate(formData: FormData) {
     redirect("/admin/review?tab=pending&error=not-found");
   }
 
+  const { data: existingResource, error: existingError } = await supabase
+    .from("resources")
+    .select("id")
+    .eq("event_id", candidate.event_id)
+    .eq("url", candidate.url)
+    .maybeSingle();
+
+  if (existingError) {
+    redirect("/admin/review?tab=pending&error=action-failed");
+  }
+
+  if (existingResource) {
+    redirect("/admin/review?tab=pending&error=duplicate-resource");
+  }
+
   const { error: insertError } = await supabase.from("resources").insert({
     event_id: candidate.event_id,
     title: candidate.title,
@@ -53,7 +100,7 @@ export async function approveCandidate(formData: FormData) {
 
   const { error: updateError } = await supabase
     .from("resource_candidates")
-    .update({ status: "approved" })
+    .update({ status: "approved", ...parseReviewFeedback(formData) })
     .eq("id", id);
 
   if (updateError) {
@@ -72,7 +119,7 @@ export async function rejectCandidate(formData: FormData) {
 
   const { error } = await supabase
     .from("resource_candidates")
-    .update({ status: "rejected" })
+    .update({ status: "rejected", ...parseReviewFeedback(formData) })
     .eq("id", id)
     .eq("status", "pending");
 

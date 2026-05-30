@@ -10,6 +10,26 @@ const RESOURCE_TYPE_BADGE: Record<string, { label: string; className: string }> 
     label: "Notes",
     className: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
   },
+  article: {
+    label: "Article",
+    className:
+      "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+  },
+  game: {
+    label: "Game",
+    className:
+      "bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-300",
+  },
+  interactive: {
+    label: "Interactive",
+    className:
+      "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+  },
+  textbook: {
+    label: "Textbook",
+    className:
+      "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+  },
   video: {
     label: "Video",
     className: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
@@ -26,6 +46,7 @@ type Tab = (typeof TABS)[number];
 
 const ERROR_MESSAGES: Record<string, string> = {
   "action-failed": "Action failed. Please try again.",
+  "duplicate-resource": "That URL is already live for this event.",
   "not-found": "Candidate not found or already actioned.",
 };
 
@@ -198,26 +219,72 @@ export default async function AdminReviewPage({
 
                 <div className="mt-3 flex gap-2">
                   {tab === "pending" ? (
-                    <>
-                      <form action={approveCandidate}>
-                        <input type="hidden" name="id" value={candidate.id} />
+                    <form className="flex w-full flex-col gap-3">
+                      <input type="hidden" name="id" value={candidate.id} />
+                      <div className="rounded-lg bg-zinc-50 p-3 dark:bg-zinc-900/70">
+                        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                          Review feedback
+                        </p>
+                        <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                          <label className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Relevance
+                            <select
+                              name="review_relevance_score"
+                              defaultValue=""
+                              className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+                            >
+                              <option value="">No rating</option>
+                              {Array.from({ length: 10 }, (_, index) => (
+                                <option key={index + 1} value={index + 1}>
+                                  {index + 1}/10
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <label className="flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                            Trust
+                            <select
+                              name="review_trust_score"
+                              defaultValue=""
+                              className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+                            >
+                              <option value="">No rating</option>
+                              {Array.from({ length: 10 }, (_, index) => (
+                                <option key={index + 1} value={index + 1}>
+                                  {index + 1}/10
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                        <label className="mt-3 flex flex-col gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                          Note
+                          <textarea
+                            name="review_notes"
+                            maxLength={300}
+                            rows={2}
+                            placeholder="Optional: too advanced for B, great visuals, weak trust signal..."
+                            className="resize-none rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-xs text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+                          />
+                        </label>
+                      </div>
+                      <div className="flex gap-2">
                         <button
                           type="submit"
+                          formAction={approveCandidate}
                           className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
                         >
                           Approve
                         </button>
-                      </form>
-                      <form action={rejectCandidate}>
-                        <input type="hidden" name="id" value={candidate.id} />
                         <button
                           type="submit"
+                          formAction={rejectCandidate}
                           className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
                         >
                           Reject
                         </button>
-                      </form>
-                    </>
+                      </div>
+                    </form>
                   ) : (
                     <form action={undoDecision}>
                       <input type="hidden" name="id" value={candidate.id} />

@@ -135,6 +135,8 @@ Pilot topic: Anatomy and Physiology -> respiratory system getting-started resour
 - Kenhub Respiratory System -> `resource_type = 'article'`
 
 **Manual curation rules learned**
+- Dedupe on `(event_id, url)` before staging candidates. `resource_candidates` already enforces this, and `resources` now has a matching unique constraint so approved/user-submitted links cannot duplicate within the same event.
+- Candidate review now supports optional private feedback fields: `review_relevance_score` (1-10), `review_trust_score` (1-10), `review_notes` (max 300 chars), and `reviewed_at`. These calibrate the future curator skill and are not copied to public resources.
 - Use richer `resource_type` values now to support future categorization: `video`, `article`, `textbook`, `interactive`, `practice_test`, etc. The admin UI can display unknown types with the zinc fallback until type-specific badges are expanded.
 - Relevance must consider Division B vs Division C fit. A long textbook can be highly relevant for Division C/reference depth but less useful as a first resource for many Division B learners; videos, interactives, and games often score higher for getting-started Division B use.
 - Trust should combine source authority with cross-source/user-review signals when available. Examples: OpenStax = Rice University/nonprofit textbook; Khan Academy = nonprofit education platform; Kenhub = medically reviewed anatomy content plus student-facing review signals; GetBodySmart = interactive anatomy site now tied to Kenhub.
@@ -145,10 +147,11 @@ Pilot topic: Anatomy and Physiology -> respiratory system getting-started resour
 ## Immediate next step
 
 **Finish the admin review smoke test** at `/admin/review?tab=pending`:
-1. Review `/events/anatomy-and-physiology` and confirm the approved respiratory resources read well publicly.
-2. Iterate the manual curator pipeline based on what felt useful/noisy.
-3. Continue with the next Anatomy and Physiology respiratory resource category or another body-system topic.
-4. Once the manual process is dialed in, codify it as a reusable skill via `/skill creator`.
+1. Review the pending respiratory candidates at `/admin/review?tab=pending`: Osmosis, Free Anatomy Quiz, PurposeGames, and Minnesota State Pressbooks.
+2. Use optional feedback scores/notes during approve/reject when useful.
+3. Review `/events/anatomy-and-physiology` and confirm approved respiratory resources read well publicly.
+4. Continue with the next Anatomy and Physiology respiratory resource category or another body-system topic.
+5. Once the manual process is dialed in, codify it as a reusable skill via `/skill creator`.
 
 
 

@@ -73,6 +73,10 @@ export interface Database {
           relevance_score: number | null;
           trust_score: number | null;
           resource_type: string | null;
+          review_relevance_score: number | null;
+          review_trust_score: number | null;
+          review_notes: string | null;
+          reviewed_at: string | null;
           status: "pending" | "approved" | "rejected";
           found_at: string;
         };
@@ -85,6 +89,10 @@ export interface Database {
           relevance_score?: number | null;
           trust_score?: number | null;
           resource_type?: string | null;
+          review_relevance_score?: number | null;
+          review_trust_score?: number | null;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
           status?: "pending" | "approved" | "rejected";
           found_at?: string;
         };
@@ -97,6 +105,10 @@ export interface Database {
           relevance_score?: number | null;
           trust_score?: number | null;
           resource_type?: string | null;
+          review_relevance_score?: number | null;
+          review_trust_score?: number | null;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
           status?: "pending" | "approved" | "rejected";
           found_at?: string;
         };
