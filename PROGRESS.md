@@ -100,12 +100,12 @@ Also in this migration:
 
 ## Currently in progress
 
-### Admin review page (plan written, not yet implemented)
+### Admin review page (implemented; smoke testing in progress)
 
 **Spec:** `docs/superpowers/specs/2026-05-30-admin-review-design.md`
 **Plan:** `docs/superpowers/plans/2026-05-30-admin-review.md`
 
-Two files to create:
+Implemented on branch `codex/admin-review`:
 
 **`src/app/admin/review/actions.ts`**
 - `approveCandidate(formData)` — fetches candidate, inserts into `public.resources` (using `ai_description` as `description`, `submitted_by = null`), marks `status = 'approved'`
@@ -124,22 +124,33 @@ Direct URL only — no nav link for now.
 
 ---
 
+### Manual resource curator pipeline (pilot started)
+
+Pilot topic: Anatomy and Physiology -> respiratory system getting-started resources.
+
+**Approved respiratory resources from the first manual pass**
+- Khan Academy respiratory system unit -> `resource_type = 'video'`
+- OpenStax Anatomy and Physiology Chapter 22 -> `resource_type = 'textbook'`
+- GetBodySmart Respiratory System -> `resource_type = 'interactive'`
+- Kenhub Respiratory System -> `resource_type = 'article'`
+
+**Manual curation rules learned**
+- Use richer `resource_type` values now to support future categorization: `video`, `article`, `textbook`, `interactive`, `practice_test`, etc. The admin UI can display unknown types with the zinc fallback until type-specific badges are expanded.
+- Relevance must consider Division B vs Division C fit. A long textbook can be highly relevant for Division C/reference depth but less useful as a first resource for many Division B learners; videos, interactives, and games often score higher for getting-started Division B use.
+- Trust should combine source authority with cross-source/user-review signals when available. Examples: OpenStax = Rice University/nonprofit textbook; Khan Academy = nonprofit education platform; Kenhub = medically reviewed anatomy content plus student-facing review signals; GetBodySmart = interactive anatomy site now tied to Kenhub.
+- Descriptions should explicitly mention the respiratory/digestive/immune/etc. topic signals so future subcategory backfills can be inferred from existing candidate text.
+
+---
+
 ## Immediate next step
 
-**Implement the admin review page** using the plan at `docs/superpowers/plans/2026-05-30-admin-review.md`.
+**Finish the admin review smoke test** at `/admin/review?tab=pending`:
+1. Review `/events/anatomy-and-physiology` and confirm the approved respiratory resources read well publicly.
+2. Iterate the manual curator pipeline based on what felt useful/noisy.
+3. Continue with the next Anatomy and Physiology respiratory resource category or another body-system topic.
+4. Once the manual process is dialed in, codify it as a reusable skill via `/skill creator`.
 
-Task order:
-1. Create `src/app/admin/review/actions.ts` (server actions)
-2. `npm run lint && npm run build` — verify clean
-3. Create `src/app/admin/review/page.tsx` (server component)
-4. `npm run lint && npm run build` — verify `/admin/review` in route table
-5. Smoke test: insert a candidate via Supabase SQL, run through approve → undo → reject → undo manually
 
-After the review page is live, the next phase is the **resource curator pipeline**:
-1. Insert real test candidates manually via Supabase SQL
-2. Run through the full pipeline manually (Claude searches for links, inserts candidates, you review)
-3. Once the manual process is dialed in, codify it as a reusable skill via `/skill creator`
-4. Iterate on the skill with a changelog tracking why each rule exists
 
 ---
 
