@@ -63,7 +63,7 @@ export async function approveCandidate(formData: FormData) {
 
   const { data: candidate } = await supabase
     .from("resource_candidates")
-    .select("id, event_id, title, url, ai_description, status")
+    .select("id, event_id, topic_id, title, url, ai_description, status")
     .eq("id", id)
     .single();
 
@@ -91,6 +91,7 @@ export async function approveCandidate(formData: FormData) {
     title: candidate.title,
     url: candidate.url,
     description: candidate.ai_description,
+    topic_id: candidate.topic_id,
     submitted_by: null,
   });
 

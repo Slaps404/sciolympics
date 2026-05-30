@@ -39,6 +39,26 @@ const RESOURCE_TYPE_BADGE: Record<string, { label: string; className: string }> 
     className:
       "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300",
   },
+  playlist: {
+    label: "Playlist",
+    className:
+      "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300",
+  },
+  lesson_collection: {
+    label: "Lesson Collection",
+    className:
+      "bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300",
+  },
+  quiz: {
+    label: "Quiz",
+    className:
+      "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+  },
+  archive: {
+    label: "Archive",
+    className:
+      "bg-stone-100 text-stone-800 dark:bg-stone-900 dark:text-stone-300",
+  },
 };
 
 const TABS = ["pending", "approved", "rejected"] as const;
@@ -92,13 +112,17 @@ export default async function AdminReviewPage({
   const { data: candidates } = await supabase
     .from("resource_candidates")
     .select(
-      "id, url, title, ai_description, relevance_score, trust_score, resource_type, found_at, event_id"
+      "id, url, title, ai_description, relevance_score, trust_score, resource_type, found_at, event_id, topic_id"
     )
     .eq("status", tab)
     .order("found_at", { ascending: false });
 
   const eventIds = [...new Set((candidates ?? []).map((c) => c.event_id))];
+  const topicIds = [
+    ...new Set((candidates ?? []).map((c) => c.topic_id).filter(Boolean)),
+  ] as string[];
   const eventMap: Record<string, { name: string; slug: string }> = {};
+  const topicMap: Record<string, { name: string; slug: string }> = {};
 
   if (eventIds.length > 0) {
     const { data: events } = await supabase
@@ -108,6 +132,17 @@ export default async function AdminReviewPage({
 
     for (const event of events ?? []) {
       eventMap[event.id] = { name: event.name, slug: event.slug };
+    }
+  }
+
+  if (topicIds.length > 0) {
+    const { data: topics } = await supabase
+      .from("event_topics")
+      .select("id, name, slug")
+      .in("id", topicIds);
+
+    for (const topic of topics ?? []) {
+      topicMap[topic.id] = { name: topic.name, slug: topic.slug };
     }
   }
 
@@ -161,6 +196,9 @@ export default async function AdminReviewPage({
         <ul className="flex flex-col gap-4">
           {candidates.map((candidate) => {
             const event = eventMap[candidate.event_id] ?? null;
+            const topic = candidate.topic_id
+              ? (topicMap[candidate.topic_id] ?? null)
+              : null;
             const badge =
               RESOURCE_TYPE_BADGE[candidate.resource_type ?? ""] ?? null;
 
@@ -179,14 +217,22 @@ export default async function AdminReviewPage({
                     >
                       {candidate.title}
                     </a>
-                    {event ? (
-                      <Link
-                        href={`/events/${event.slug}`}
-                        className="text-xs text-zinc-500 hover:underline dark:text-zinc-400"
-                      >
-                        {event.name}
-                      </Link>
-                    ) : null}
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+                      {event ? (
+                        <Link
+                          href={`/events/${event.slug}`}
+                          className="hover:underline"
+                        >
+                          {event.name}
+                        </Link>
+                      ) : null}
+                      {event && topic ? <span aria-hidden="true">/</span> : null}
+                      {topic ? (
+                        <span className="rounded-full bg-zinc-100 px-2 py-0.5 font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                          {topic.name}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                   {badge ? (
                     <span

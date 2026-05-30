@@ -25,6 +25,10 @@ function formatDate(iso: string): string {
   });
 }
 
+function getSingleParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 const TABS = [
   { label: "Resources", active: true },
   { label: "Quiz", active: false },
@@ -37,10 +41,15 @@ export default async function EventPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{
+    error?: string | string[];
+    topic?: string | string[];
+  }>;
 }) {
   const { slug } = await params;
-  const { error: submitError } = await searchParams;
+  const query = await searchParams;
+  const submitError = getSingleParam(query.error);
+  const rawTopic = getSingleParam(query.topic);
 
   const supabase = await createClient();
 
@@ -56,11 +65,26 @@ export default async function EventPage({
   }
   if (!event) notFound();
 
-  const { data: resources } = await supabase
+  const { data: topics } = await supabase
+    .from("event_topics")
+    .select("id, name, slug")
+    .eq("event_id", event.id)
+    .order("sort_order", { ascending: true });
+
+  const activeTopic =
+    topics?.find((topic) => topic.slug === rawTopic) ?? null;
+
+  let resourcesQuery = supabase
     .from("resources")
-    .select("id, title, url, description, created_at, submitted_by")
+    .select("id, title, url, description, created_at, submitted_by, topic_id")
     .eq("event_id", event.id)
     .order("created_at", { ascending: false });
+
+  if (activeTopic) {
+    resourcesQuery = resourcesQuery.eq("topic_id", activeTopic.id);
+  }
+
+  const { data: resources } = await resourcesQuery;
 
   // Fetch submitter emails for display
   const submitterIds = [...new Set((resources ?? []).map((r) => r.submitted_by).filter(Boolean))] as string[];
@@ -132,6 +156,41 @@ export default async function EventPage({
         )}
       </div>
 
+      {topics && topics.length > 0 ? (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {!activeTopic ? (
+            <span className="rounded-full bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
+              All
+            </span>
+          ) : (
+            <Link
+              href={`/events/${slug}`}
+              className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            >
+              All
+            </Link>
+          )}
+          {topics.map((topic) =>
+            activeTopic?.id === topic.id ? (
+              <span
+                key={topic.id}
+                className="rounded-full bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+              >
+                {topic.name}
+              </span>
+            ) : (
+              <Link
+                key={topic.id}
+                href={`/events/${slug}?topic=${topic.slug}`}
+                className="rounded-full border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              >
+                {topic.name}
+              </Link>
+            )
+          )}
+        </div>
+      ) : null}
+
       {/* Resources list */}
       <section className="flex flex-col gap-6">
         {resources && resources.length > 0 ? (
@@ -173,7 +232,9 @@ export default async function EventPage({
         ) : (
           <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-10 text-center dark:border-zinc-700">
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              No resources yet — be the first to submit one below.
+              {activeTopic
+                ? `No resources for ${activeTopic.name} yet.`
+                : "No resources yet - be the first to submit one below."}
             </p>
           </div>
         )}

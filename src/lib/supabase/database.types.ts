@@ -63,11 +63,42 @@ export interface Database {
         };
         Relationships: [];
       };
+      event_topics: {
+        Row: {
+          id: string;
+          event_id: string;
+          slug: string;
+          name: string;
+          description: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          slug: string;
+          name: string;
+          description?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_id?: string;
+          slug?: string;
+          name?: string;
+          description?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       resource_candidates: {
         Row: {
           id: string;
           url: string;
           event_id: string;
+          topic_id: string | null;
           title: string;
           ai_description: string | null;
           relevance_score: number | null;
@@ -84,6 +115,7 @@ export interface Database {
           id?: string;
           url: string;
           event_id: string;
+          topic_id?: string | null;
           title: string;
           ai_description?: string | null;
           relevance_score?: number | null;
@@ -100,6 +132,7 @@ export interface Database {
           id?: string;
           url?: string;
           event_id?: string;
+          topic_id?: string | null;
           title?: string;
           ai_description?: string | null;
           relevance_score?: number | null;
@@ -118,6 +151,7 @@ export interface Database {
         Row: {
           id: string;
           event_id: string;
+          topic_id: string | null;
           title: string;
           url: string;
           description: string | null;
@@ -127,6 +161,7 @@ export interface Database {
         Insert: {
           id?: string;
           event_id: string;
+          topic_id?: string | null;
           title: string;
           url: string;
           description?: string | null;
@@ -136,6 +171,7 @@ export interface Database {
         Update: {
           id?: string;
           event_id?: string;
+          topic_id?: string | null;
           title?: string;
           url?: string;
           description?: string | null;
