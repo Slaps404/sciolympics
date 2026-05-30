@@ -2,18 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ message?: string }>;
-}) {
-  const params = await searchParams;
+export default async function Dashboard() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) redirect("/dashboard");
+  if (!user) redirect("/login?next=/dashboard");
 
   const { data: events, error } = await supabase
     .from("events")
@@ -21,46 +16,29 @@ export default async function Home({
     .order("name");
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-6 py-12">
-      {params.message === "confirmed" ? (
-        <p className="rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800 dark:border-green-900 dark:bg-green-950 dark:text-green-200">
-          Email confirmed — welcome to SciOlympics!
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-12">
+      <section className="flex flex-col gap-1">
+        <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="text-zinc-600 dark:text-zinc-400">
+          Welcome back, {user.email}
         </p>
-      ) : null}
-
-      <section className="flex flex-col gap-6">
-        <div className="flex flex-col gap-3">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Science Olympiad, practiced smarter.
-          </h1>
-          <p className="max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            Browse curated event resources and race against recorded runs from
-            your teammates. Built for Division B &amp; C competitors.
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Link
-            href="/signup"
-            className="rounded-md bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-          >
-            Get started — it&apos;s free
-          </Link>
-          <Link
-            href="/login"
-            className="rounded-md border border-zinc-300 px-5 py-2.5 text-sm font-medium dark:border-zinc-700"
-          >
-            Log in
-          </Link>
-        </div>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-medium">Events you can practice</h2>
+      {/* Hub cards — add more here as L3/L4 features land */}
+      <section className="grid gap-4 sm:grid-cols-2">
+        <Link
+          href="#events"
+          className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-5 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+        >
+          <p className="font-medium">Resources</p>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Sign up to submit resources and track your prep.
+            Browse link-based resources tagged by event.
           </p>
-        </div>
+        </Link>
+      </section>
+
+      <section id="events" className="flex flex-col gap-4">
+        <h2 className="text-xl font-medium">Events</h2>
         {error ? (
           <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
             Could not load events. Run database migrations with{" "}

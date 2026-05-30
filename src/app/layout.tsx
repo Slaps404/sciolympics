@@ -41,24 +41,39 @@ export default async function RootLayout({
             <Link href="/" className="text-lg font-semibold">
               SciOlympics
             </Link>
-            <nav className="flex items-center gap-4 text-sm">
+            <nav className="flex items-center gap-3 text-sm">
               {user ? (
                 <>
-                  <span className="text-zinc-600 dark:text-zinc-400">
+                  <Link
+                    href="/dashboard"
+                    className="rounded-md px-3 py-1.5 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  >
+                    Dashboard
+                  </Link>
+                  <span className="text-zinc-400 dark:text-zinc-600">
                     {user.email}
                   </span>
                   <form action={logout}>
-                    <button type="submit" className="underline">
+                    <button
+                      type="submit"
+                      className="rounded-md border border-zinc-300 px-3 py-1.5 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                    >
                       Log out
                     </button>
                   </form>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="underline">
+                  <Link
+                    href="/login"
+                    className="rounded-md border border-zinc-300 px-3 py-1.5 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                  >
                     Log in
                   </Link>
-                  <Link href="/signup" className="underline">
+                  <Link
+                    href="/signup"
+                    className="rounded-md bg-zinc-900 px-3 py-1.5 text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                  >
                     Sign up
                   </Link>
                 </>
