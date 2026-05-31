@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { parseResourceType } from "@/lib/resources/resource-types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -63,7 +64,9 @@ export async function approveCandidate(formData: FormData) {
 
   const { data: candidate } = await supabase
     .from("resource_candidates")
-    .select("id, event_id, topic_id, title, url, ai_description, status")
+    .select(
+      "id, event_id, topic_id, resource_type, title, url, ai_description, status"
+    )
     .eq("id", id)
     .single();
 
@@ -92,6 +95,7 @@ export async function approveCandidate(formData: FormData) {
     url: candidate.url,
     description: candidate.ai_description,
     topic_id: candidate.topic_id,
+    resource_type: parseResourceType(candidate.resource_type),
     submitted_by: null,
   });
 

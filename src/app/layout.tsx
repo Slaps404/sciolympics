@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const NAV_LINKS = [
+  { href: "/resources", label: "Resources" },
+  { href: "/quiz", label: "Quiz" },
+  { href: "/groups", label: "Groups" },
+  { href: "/compete", label: "Compete" },
+];
+
 export const metadata: Metadata = {
   title: "SciOlympics",
   description: "Science Olympiad practice resources and async ghost-race quizzes",
@@ -48,20 +55,23 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <header className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
-          <div className="mx-auto flex max-w-5xl items-center justify-between">
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
             <Link href="/" className="text-base font-semibold tracking-tight">
               SciOlympics
             </Link>
 
-            <nav className="flex items-center gap-3 text-sm">
+            <nav className="flex flex-wrap items-center justify-end gap-2 text-sm">
+              {NAV_LINKS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-md px-2.5 py-1.5 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                >
+                  {item.label}
+                </Link>
+              ))}
               {user && initials ? (
-                <>
-                  <Link
-                    href="/dashboard"
-                    className="rounded-md px-3 py-1.5 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                  >
-                    Dashboard
-                  </Link>
+                <div className="ml-1">
                   <details className="relative">
                     <summary className="flex cursor-pointer list-none items-center gap-2 select-none">
                       <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-xs font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900">
@@ -73,6 +83,12 @@ export default async function RootLayout({
                         {user.email}
                       </p>
                       <hr className="border-zinc-200 dark:border-zinc-700" />
+                      <Link
+                        href="/dashboard"
+                        className="block px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        Dashboard
+                      </Link>
                       <form action={logout}>
                         <button
                           type="submit"
@@ -83,7 +99,7 @@ export default async function RootLayout({
                       </form>
                     </div>
                   </details>
-                </>
+                </div>
               ) : (
                 <>
                   <Link

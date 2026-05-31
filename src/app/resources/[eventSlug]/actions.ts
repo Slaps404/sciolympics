@@ -1,6 +1,6 @@
 "use server";
 
-// IMPORTANT: import from server.ts (SSR client with cookie-based session), not client.ts
+import { parseResourceType } from "@/lib/resources/resource-types";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -12,9 +12,10 @@ export async function submitResource(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const url = String(formData.get("url") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
+  const resourceType = parseResourceType(formData.get("resource_type"));
 
-  if (!slug) redirect("/");
-  const back = `/events/${slug}`;
+  if (!slug) redirect("/resources");
+  const back = `/resources/${slug}`;
 
   if (!title || !url) redirect(`${back}?error=missing-fields`);
 
@@ -24,7 +25,9 @@ export async function submitResource(formData: FormData) {
   } catch {
     redirect(`${back}?error=invalid-url`);
   }
-  if (!ALLOWED_PROTOCOLS.has(parsed.protocol)) redirect(`${back}?error=invalid-url`);
+  if (!ALLOWED_PROTOCOLS.has(parsed.protocol)) {
+    redirect(`${back}?error=invalid-url`);
+  }
 
   const supabase = await createClient();
   const {
@@ -37,7 +40,7 @@ export async function submitResource(formData: FormData) {
     .select("id")
     .eq("slug", slug)
     .single();
-  if (!event) redirect("/");
+  if (!event) redirect("/resources");
 
   const { error } = await supabase.from("resources").insert({
     event_id: event.id,
@@ -45,6 +48,7 @@ export async function submitResource(formData: FormData) {
     title,
     url,
     description,
+    resource_type: resourceType,
   });
 
   if (error) redirect(`${back}?error=submit-failed`);

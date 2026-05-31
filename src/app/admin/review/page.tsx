@@ -220,7 +220,7 @@ export default async function AdminReviewPage({
                     <div className="flex flex-wrap items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                       {event ? (
                         <Link
-                          href={`/events/${event.slug}`}
+                          href={`/resources/${event.slug}`}
                           className="hover:underline"
                         >
                           {event.name}

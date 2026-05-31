@@ -8,6 +8,17 @@ export type Json =
 
 export type PracticeType = "quiz" | "hybrid" | "build";
 export type Division = "B" | "C";
+export type ResourceType =
+  | "video"
+  | "article"
+  | "textbook"
+  | "interactive"
+  | "game"
+  | "quiz"
+  | "practice_test"
+  | "lesson_collection"
+  | "archive"
+  | "other";
 
 export interface Database {
   public: {
@@ -152,6 +163,7 @@ export interface Database {
           id: string;
           event_id: string;
           topic_id: string | null;
+          resource_type: ResourceType | null;
           title: string;
           url: string;
           description: string | null;
@@ -162,6 +174,7 @@ export interface Database {
           id?: string;
           event_id: string;
           topic_id?: string | null;
+          resource_type?: ResourceType | null;
           title: string;
           url: string;
           description?: string | null;
@@ -172,6 +185,7 @@ export interface Database {
           id?: string;
           event_id?: string;
           topic_id?: string | null;
+          resource_type?: ResourceType | null;
           title?: string;
           url?: string;
           description?: string | null;

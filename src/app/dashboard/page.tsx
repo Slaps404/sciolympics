@@ -27,7 +27,7 @@ export default async function Dashboard() {
       {/* Hub cards — add more here as L3/L4 features land */}
       <section className="grid gap-4 sm:grid-cols-2">
         <Link
-          href="#events"
+          href="/resources"
           className="flex flex-col gap-2 rounded-lg border border-zinc-200 p-5 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
         >
           <p className="font-medium">Resources</p>
@@ -52,7 +52,7 @@ export default async function Dashboard() {
                 key={event.id}
                 className="rounded-lg border border-zinc-200 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
               >
-                <Link href={`/events/${event.slug}`} className="block p-4">
+                <Link href={`/resources/${event.slug}`} className="block p-4">
                   <p className="font-medium">{event.name}</p>
                   <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                     {event.practice_type} · {event.season_year}

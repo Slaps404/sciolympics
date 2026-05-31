@@ -34,24 +34,25 @@
 
 ### L1 — Resources (complete)
 
-**Event detail page** (`src/app/events/[slug]/page.tsx`)
-- Lists resources for the event in reverse-chronological order
-- Colored type badge (Quiz/Hybrid/Build) from `PRACTICE_TYPE_BADGE` map
-- Submit-a-resource form: title + URL (required) + description (optional), gated to authenticated users
-- Error messages passed via `?error=` searchParam
-- Tab bar stub: Resources (active), Quiz / Groups / Compete (disabled with "coming soon" tooltip)
+**Activity-first resource hub** (`src/app/resources/page.tsx`, `src/app/resources/[eventSlug]/page.tsx`)
+- `/resources` shows an event picker; signed-in home redirects there.
+- `/resources/[eventSlug]` lists event resources in reverse-chronological order.
+- Old `/events/[slug]` URLs redirect to `/resources/[slug]`.
+- Resource page uses a filter drawer with multi-select topic and resource-type filters.
+- Submit-a-resource form: title + URL required, description and type optional, gated to authenticated users.
+- Error messages passed via `?error=` searchParam.
 
-**Submit resource action** (`src/app/events/[slug]/actions.ts`)
-- Validates URL protocol (http/https only)
-- Guards against unauthenticated submission
-- Inserts into `public.resources` with `submitted_by = user.id`
+**Resource type migration** (`supabase/migrations/20260530214106_resources_resource_type.sql`)
+- Added nullable `public.resources.resource_type` with canonical values: `video`, `article`, `textbook`, `interactive`, `game`, `quiz`, `practice_test`, `lesson_collection`, `archive`, `other`.
+- Backfilled approved curated live resources from matching `resource_candidates.resource_type`.
+- Admin approval now copies both `topic_id` and `resource_type` into live resources.
 
 **Anatomy and Physiology topic filters** (`supabase/migrations/20260530204853_anatomy_event_topics.sql`)
 - Added `public.event_topics` for optional event subcategories: `event_id`, `slug`, `name`, `description`, `sort_order`, `created_at`
 - Added nullable `topic_id` to `public.resource_candidates` and `public.resources`
 - Seeded Anatomy and Physiology topics for the 2027 systems: `respiratory-system`, `immune-system`, `digestive-system`
 - Backfilled existing Anatomy and Physiology candidates/resources to `respiratory-system`
-- `/events/anatomy-and-physiology` now shows All / Respiratory / Immune / Digestive filter chips; All includes resources with or without a topic
+- `/resources/anatomy-and-physiology` now filters by Respiratory / Immune / Digestive topics; All behavior is clearing the filter drawer.
 
 ---
 
@@ -59,19 +60,25 @@
 
 **Root layout** (`src/app/layout.tsx`)
 - Persistent header on every page via Next.js App Router root layout
+- Top-level activity nav: Resources / Quiz / Groups / Compete
 - Logged-out: "Log in" (bordered pill) + "Sign up" (filled zinc pill)
-- Logged-in: "Dashboard" link + avatar initials dropdown (email + Log out)
+- Logged-in: avatar initials dropdown with email, Dashboard, and Log out
 - `getInitials(email)` helper splits on `.`, `-`, `_` separators
 
 **Landing page** (`src/app/page.tsx`)
-- Logged-in users: immediately `redirect("/dashboard")`
+- Logged-in users: immediately `redirect("/resources")`
 - Logged-out users: hero pitch + "Get started — it's free" + "Log in" CTAs, then events grid below as proof-of-value
 - Event cards: colored type badge, description preview, resource count pulled from `public.resources`
 
 **Dashboard** (`src/app/dashboard/page.tsx`)
 - Gated: `redirect("/login?next=/dashboard")` if not authenticated
 - Welcome header with user email
-- Resources hub card (links to `#events` anchor)
+- Resources hub card links to `/resources`
+- Full events grid below the card links event cards to `/resources/[eventSlug]`.
+
+**Future activity shells**
+- `/quiz`, `/groups`, and `/compete` show event pickers with focused coming-soon states.
+- `/quiz/[eventSlug]`, `/groups/[eventSlug]`, and `/compete/[eventSlug]` show event-specific coming-soon pages with a link back to resources.
 - Full events grid below the card — same rich card design as landing
 
 ---
@@ -168,8 +175,8 @@ Verified on 2026-05-30:
 - Remote migration `20260530204853_anatomy_event_topics.sql` applied.
 - Follow-up migration `20260530205726_lock_down_public_functions_and_topic_policies.sql` applied to revoke public EXECUTE on `handle_new_user()` / `is_admin()` and narrow event topic admin write policies.
 - Topic counts: Respiratory = 12 live resources / 14 candidates; Immune = 0 live resources / 5 pending candidates; Digestive = 0 live resources / 0 candidates.
-- `/events/anatomy-and-physiology` shows All / Respiratory / Immune / Digestive filters.
-- `/events/anatomy-and-physiology?topic=immune-system` correctly stays empty while immune candidates are pending.
+- `/resources/anatomy-and-physiology` shows Respiratory / Immune / Digestive filters in the drawer.
+- `/resources/anatomy-and-physiology?topic=immune-system` correctly stays empty while immune candidates are pending.
 - `/admin/review?tab=pending` shows the 5 immune candidates with the Immune topic pill.
 
 ---
@@ -179,7 +186,7 @@ Verified on 2026-05-30:
 **Human review the immune pack** at `/admin/review?tab=pending`:
 1. Review the 5 pending immune candidates and use optional feedback scores/notes when useful.
 2. Approve one candidate to verify promotion from `resource_candidates.topic_id` to `resources.topic_id`.
-3. Check `/events/anatomy-and-physiology?topic=immune-system` after approval and confirm the resource appears under Immune.
+3. Check `/resources/anatomy-and-physiology?topic=immune-system` after approval and confirm the resource appears under Immune.
 4. Continue with either pruning low-value approved respiratory resources or staging the first digestive-system pack.
 5. Keep tightening `curate-scioly-resources` from the feedback before broader event curation.
 
