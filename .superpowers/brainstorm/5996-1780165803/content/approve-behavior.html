@@ -1,0 +1,26 @@
+<h2>When you approve a candidate, what should happen?</h2>
+<p class="subtitle">This shapes whether resource_candidates is a queue or a permanent log.</p>
+
+<div class="options">
+  <div class="option" data-choice="promote-keep" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Promote + keep candidate</h3>
+      <p>Copy row into <code>public.resources</code>, mark candidate <code>approved</code>. Full audit trail — you can always see what the AI found and when.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="promote-delete" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Promote + delete candidate</h3>
+      <p>Copy row into <code>public.resources</code>, delete the candidate. Cleaner staging table — no clutter after review.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="status-only" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Status-only (no promotion yet)</h3>
+      <p>Just flip <code>status = approved</code> on the candidate. A separate job or button later moves approved rows into <code>resources</code>.</p>
+    </div>
+  </div>
+</div>

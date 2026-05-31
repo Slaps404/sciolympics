@@ -13,4 +13,4 @@ Single source of truth for build phase. Update this file when a layer ships.
 
 ## Known v2 items
 
-- Duplicate URL submissions per event are allowed (no unique constraint on `resources(event_id, url)`). Deduplication is planned for v2.
+- A resource can be approved and then undone by deleting the matching `(event_id, url)` live row. This is deterministic because live resources now enforce unique `(event_id, url)`, but later provenance fields would make undo safer for mixed human/AI submissions.

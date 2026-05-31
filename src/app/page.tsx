@@ -19,7 +19,7 @@ export default async function Home({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) redirect("/dashboard");
+  if (user) redirect("/resources");
 
   const { data: events, error } = await supabase
     .from("events")
@@ -90,7 +90,7 @@ export default async function Home({
               return (
                 <li key={event.id}>
                   <Link
-                    href={`/events/${event.slug}`}
+                    href={`/resources/${event.slug}`}
                     className="group flex h-full flex-col gap-3 rounded-xl border border-zinc-200 p-5 transition-colors hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
                   >
                     <div className="flex items-start justify-between gap-2">
